@@ -20,10 +20,15 @@ function getExpiryStatus(expiryDate: string) {
 }
 
 function getRowStyle(expiryStatus: string) {
-  if (expiryStatus === 'expired') return 'bg-red-50 border-l-4 border-red-500';
-  if (expiryStatus === 'expiring')
-    return 'bg-amber-50 border-l-4 border-amber-400';
+  if (expiryStatus === 'expired') return 'bg-red-50';
+  if (expiryStatus === 'expiring') return 'bg-amber-50';
   return 'bg-white';
+}
+
+function getAccentBorder(expiryStatus: string) {
+  if (expiryStatus === 'expired') return 'border-l-4 border-red-500';
+  if (expiryStatus === 'expiring') return 'border-l-4 border-amber-400';
+  return 'border-l-4 border-transparent';
 }
 
 function ExpiryBadge({ expiryDate }: { expiryDate: string }) {
@@ -37,20 +42,20 @@ function ExpiryBadge({ expiryDate }: { expiryDate: string }) {
 
   if (status === 'expired') {
     return (
-      <span className="px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-700">
+      <span className="px-2 py-1 text-xs font-semibold rounded-full whitespace-nowrap bg-red-100 text-red-700">
         Expired {Math.abs(daysUntil)}d ago
       </span>
     );
   }
   if (status === 'expiring') {
     return (
-      <span className="px-2 py-1 text-xs font-semibold rounded-full bg-amber-100 text-amber-700">
+      <span className="px-2 py-1 text-xs font-semibold rounded-full whitespace-nowrap bg-amber-100 text-amber-700">
         {daysUntil === 0 ? 'Expires today' : `${daysUntil}d left`}
       </span>
     );
   }
   return (
-    <span className="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-700">
+    <span className="px-2 py-1 text-xs font-semibold rounded-full whitespace-nowrap bg-gray-100 text-gray-600">
       {daysUntil}d
     </span>
   );
@@ -88,14 +93,13 @@ export default function AgreementTable({
   return (
     <div className="overflow-x-auto rounded-lg shadow">
       <table className="min-w-full text-sm">
-        <thead className="bg-gray-800 text-white">
+        <thead className="bg-gray-800 text-white whitespace-nowrap">
           <tr>
             <th className="px-4 py-3 text-left">Employer</th>
             <th className="px-4 py-3 text-left">Industry</th>
             <th className="px-4 py-3 text-left">Region</th>
-            <th className="px-4 py-3 text-left">Expiry Date</th>
-            <th className="px-4 py-3 text-left">Days Left</th>
-            <th className="px-4 py-3 text-left">Status</th>
+            <th className="px-4 py-3 text-left">Expiry</th>
+            <th className="px-4 py-3 text-left">Bargaining Status</th>
             <th className="px-4 py-3 text-left">Organiser</th>
             <th className="px-4 py-3 text-left">Members</th>
             <th className="px-4 py-3 text-left">Actions</th>
@@ -109,7 +113,9 @@ export default function AgreementTable({
                 key={agreement.id}
                 className={`${getRowStyle(expiryStatus)} hover:opacity-90 transition-opacity`}
               >
-                <td className="px-4 py-3 font-medium text-gray-900">
+                <td
+                  className={`px-4 py-3 font-medium text-gray-900 ${getAccentBorder(expiryStatus)}`}
+                >
                   {agreement.employerName}
                 </td>
                 <td className="px-4 py-3 text-gray-600">
@@ -117,10 +123,10 @@ export default function AgreementTable({
                 </td>
                 <td className="px-4 py-3 text-gray-600">{agreement.region}</td>
                 <td className="px-4 py-3 text-gray-600">
-                  {agreement.ceaExpiryDate}
-                </td>
-                <td className="px-4 py-3">
-                  <ExpiryBadge expiryDate={agreement.ceaExpiryDate} />
+                  <div>{agreement.ceaExpiryDate}</div>
+                  <div className="mt-1">
+                    <ExpiryBadge expiryDate={agreement.ceaExpiryDate} />
+                  </div>
                 </td>
                 <td className="px-4 py-3">
                   <StatusBadge status={agreement.status} />
